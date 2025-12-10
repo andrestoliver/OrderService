@@ -7,7 +7,7 @@ public class CreateOrderService
     public CreateOrderResponse Execute(CreateOrderRequest request)
     {
         if(request.Items == null || !request.Items.Any())
-            throw new ArgumentNullException("O pedido deve ter pelo menos um item.");
+            throw new ArgumentException("O pedido deve ter pelo menos um item.");
 
         var order = new Order(Guid.NewGuid());
 
