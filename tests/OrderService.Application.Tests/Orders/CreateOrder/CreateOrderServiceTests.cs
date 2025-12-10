@@ -6,13 +6,13 @@ namespace OrderService.Application.Tests.Orders.CreateOrder;
 
 public class CreateOrderServiceTests
 {
-    private readonly CreateOrderService _service = new();
-
     [Fact]
-    public void ShouldCreateOrderWithValidItems()
+    public async Task ShouldCreateOrderWithValidItems()
     {
         //Arrange
-        var request = new CreateOrderRequest(
+        var handler = new CreateOrderCommandHandler();
+
+        var command = new CreateOrderCommand(
             new List<CreateOrderItemRequest>
             {
                 new(Guid.NewGuid(), 2, 50),
@@ -21,7 +21,7 @@ public class CreateOrderServiceTests
         );
         
         //Act
-        var result = _service.Execute(request);
+        var result = await handler.Handle(command, CancellationToken.None);
         
         //Assert
         result.OrderId.Should().NotBeEmpty();
@@ -30,16 +30,17 @@ public class CreateOrderServiceTests
     }
 
     [Fact]
-    public void ShouldNotCreateOrderWithoutItems()
+    public async Task ShouldNotCreateOrderWithoutItems()
     {
         //Arrange
-        var request = new CreateOrderRequest(new List<CreateOrderItemRequest>());
+        var handler = new CreateOrderCommandHandler();
+        var command = new CreateOrderCommand(new List<CreateOrderItemRequest>());
         
         //Act
-        Action act = () => _service.Execute(request);
+        Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
         
         //Assert
-        act.Should().Throw<ArgumentException>()
+        await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("O pedido deve ter pelo menos um item.");
     }
 }
