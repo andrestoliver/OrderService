@@ -7,9 +7,6 @@ public class CreateOrderCommandHandler
 {
     public Task<CreateOrderResponse> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
-        if (request.Items == null || !request.Items.Any())
-            throw new ArgumentException("O pedido deve ter pelo menos um item.");
-        
         var total = request.Items.Sum(i => i.Quantity * i.UnitPrice);
 
         var response = new CreateOrderResponse(
